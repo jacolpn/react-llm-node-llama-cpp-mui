@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './App.css';
+
+const SyntaxHighlightedJSON = ({ data }) => {
+  if (!data) return null;
+  
+  const jsonString = JSON.stringify(data, null, 2);
+  
+  const highlighted = jsonString
+    .replace(/"([^"]+)":/g, '"<span class="key">$1</span>":')
+    .replace(/"([^"]+)"/g, '"<span class="string">$1</span>"')
+    .replace(/\b(true|false)\b/g, '<span class="boolean">$1</span>')
+    .replace(/\b(null)\b/g, '<span class="null">$1</span>')
+    .replace(/\b(\d+)\b/g, '<span class="number">$1</span>');
+
+  return <div dangerouslySetInnerHTML={{ __html: highlighted }} />;
+};
 
 function App() {
   const [message, setMessage] = useState('');
@@ -14,38 +30,39 @@ function App() {
       setResponse(res?.data);
     } catch (error) {
       console.error(error);
-      setResponse('Erro ao conectar com o servidor');
+      setResponse({ error: 'Erro ao conectar com o servidor' });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div style={{ padding: '20px', maxWidth: '600px', margin: '0 auto' }}>
-      <h1>Chat com Llama</h1>
-      <form onSubmit={handleSubmit}>
+    <div className="app-container">
+      <h1 className="app-title">Chat com Llama</h1>
+      
+      <form className="chat-form" onSubmit={handleSubmit}>
         <input
           type="text"
+          className="chat-input"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Digite sua mensagem"
-          style={{ width: '100%', padding: '10px', marginBottom: '10px' }}
+          placeholder="Digite sua mensagem..."
         />
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? 'Processando...' : 'Enviar'}
+        <button type="submit" className="submit-button" disabled={isLoading}>
+          {isLoading ? (
+            <>
+              <span className="loading-spinner"></span>
+              Processando...
+            </>
+          ) : 'Enviar Consulta'}
         </button>
       </form>
+      
       {response && (
-        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ddd' }}>
-          <strong>Resposta:</strong>
-          <pre style={{ 
-            whiteSpace: 'pre-wrap',
-            wordWrap: 'break-word',
-            backgroundColor: '#f5f5f5',
-            padding: '10px',
-            borderRadius: '4px'
-          }}>
-            {JSON.stringify(response, null, 2)}
+        <div className="response-container">
+          <div className="response-header">Resposta da API</div>
+          <pre className="response-content">
+            <SyntaxHighlightedJSON data={response} />
           </pre>
         </div>
       )}
