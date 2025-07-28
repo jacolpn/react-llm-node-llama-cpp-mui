@@ -3,7 +3,7 @@ import axios from 'axios';
 
 function App() {
   const [message, setMessage] = useState('');
-  const [response, setResponse] = useState('');
+  const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -11,7 +11,7 @@ function App() {
     setIsLoading(true);
     try {
       const res = await axios.post('http://localhost:3001/api/chat', { message });
-      setResponse(res.data.response);
+      setResponse(res?.data);
     } catch (error) {
       console.error(error);
       setResponse('Erro ao conectar com o servidor');
@@ -38,7 +38,15 @@ function App() {
       {response && (
         <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #ddd' }}>
           <strong>Resposta:</strong>
-          <p>{response}</p>
+          <pre style={{ 
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            backgroundColor: '#f5f5f5',
+            padding: '10px',
+            borderRadius: '4px'
+          }}>
+            {JSON.stringify(response, null, 2)}
+          </pre>
         </div>
       )}
     </div>
