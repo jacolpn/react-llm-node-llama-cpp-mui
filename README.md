@@ -2,6 +2,8 @@
 - https://node-llama-cpp.withcat.ai/
 - https://www.npmjs.com/package/node-llama-cpp
 
+https://github.com/user-attachments/assets/580178db-86a8-4964-b582-ab562ee1650e
+
 ## Ideia de prompt:
 Você é um assistente que converte comandos em JSON estruturado para operações em tabelas.
     CONTEXTO DA TABELA (campos disponíveis):
