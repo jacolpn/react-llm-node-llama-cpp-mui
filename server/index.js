@@ -2,77 +2,85 @@ import express from 'express';
 import cors from 'cors';
 import { LlamaModel, LlamaContext, LlamaChatSession } from 'node-llama-cpp';
 
+const PORT = 3001;
+
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true
+}));
 app.use(express.json());
 
 const model = new LlamaModel({
-    modelPath: '../models/mistral-7b-instruct-v0.2.Q3_K_S.gguf'
+  modelPath: '../models/mistral-7b-instruct-v0.2.Q3_K_S.gguf'
 });
 const context = new LlamaContext({ model });
-const session = new LlamaChatSession({ 
-    context,
-    temperature: 0.1,
-    maxTokens: 200
+const session = new LlamaChatSession({
+  context,
+  temperature: 0.1,
 });
 
-const buildPrompt = (userCommand) => `
+const generateConversationId = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+
+  for (let i = 0; i < 32; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  
+  return result;
+};
+
+const buildPrompt = (userCommand, tableContext) => `
     [INST]
         <<SYS>>
             Você é um conversor estrito de comandos para JSON. Responda SOMENTE com o JSON especificado abaixo, sem comentários.
 
-            CONTEXTO DA TABELA: [{\"field\":\"__check__\",\"description\":null,\"examples\":[false],\"type\":\"custom\",\"allowedOperators\":[\"is\"]},{\"field\":\"code\",\"description\":null,\"examples\":[\"XP\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"name\",\"description\":null,\"examples\":[\"XP Investimento\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"external_code\",\"description\":null,\"examples\":[\"XP\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"document\",\"description\":null,\"examples\":[\"02332886000104\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"tax_id\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"currency_code\",\"description\":null,\"examples\":[\"BRL\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"cost_center_plan_code\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"accounting_account_plan_code\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"profit_center_plan_code\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"division_plan_code\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"calendar_code\",\"description\":null,\"examples\":[\"\"],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"zipcode\",\"description\":null,\"examples\":[null],\"type\":\"number\",\"allowedOperators\":[\"=\",\"!=\",\">\",\">=\",\"<\",\"<=\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"state\",\"description\":null,\"examples\":[null],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"city\",\"description\":null,\"examples\":[null],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"neighborhood\",\"description\":null,\"examples\":[null],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"street\",\"description\":null,\"examples\":[null],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"number\",\"description\":null,\"examples\":[null],\"type\":\"number\",\"allowedOperators\":[\"=\",\"!=\",\">\",\">=\",\"<\",\"<=\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]},{\"field\":\"complement\",\"description\":null,\"examples\":[null],\"type\":\"string\",\"allowedOperators\":[\"contains\",\"doesNotContain\",\"equals\",\"doesNotEqual\",\"startsWith\",\"endsWith\",\"isEmpty\",\"isNotEmpty\",\"isAnyOf\"]}]
+            CONTEXTO DA TABELA: ${tableContext}
 
             COMANDO DO USUÁRIO: ${userCommand}
 
-            FORMATO DE RESPOSTA EXATO (apenas JSON):
+            FORMATO DE RESPOSTA EXATO (apenas JSON) - TODOS OS CAMPOS DEVEM SER INCLUÍDOS MESMO QUE VAZIOS:
                 {
                     "ok": true,
                     "data": {
                         "select": -1,
-                        "filters": [
-                            {
-                                "operator": "equals",
-                                "value": "XP",
-                                "column": "code"
-                            }
-                        ],
-                        "filterOperator": "and",
+                        "filters": [],
                         "aggregation": {},
-                        "sorting": [
-                            {
-                                "column": "external_code",
-                                "direction": "asc"
-                            }
-                        ],
-                        "grouping": [
-                            {
-                                "column": "name"
-                            }
-                        ],
+                        "sorting": [],
+                        "grouping": [],
                         "pivoting": {},
-                        "conversationId": "FR79W5--GO_tdak6m5CnJ1m2N3gFQLey"
+                        "conversationId": "2q3WtwkrWLPqHPKou6tBzdYi6aUOUwSX"
                     }
                 }
 
-            REGRAS:
-                1. Use apenas os campos listados no contexto (se houver)
-                2. "direction" deve ser "desc" se o comando mencionar "decrescente" ou "desc", caso contrário "asc"
-                3. Se não entender, retorne:
+            REGRAS IMPORTANTES:
+                1. Todos os campos devem ser incluídos na resposta, mesmo que vazios
+                2. "filters" deve ser sempre um array (pode ser vazio)
+                3. "sorting" deve ser sempre um array de objetos com "column" e "direction" (pode ser vazio)
+                4. "grouping" deve ser sempre um array (pode ser vazio)
+                5. "aggregation" e "pivoting" devem ser sempre objetos (podem ser vazios)
+                6. "filterOperator" deve ser sempre incluído com valor padrão "and"
+                7. Use apenas os campos listados no contexto
+                8. "direction" deve ser "desc" se o comando mencionar "decrescente" ou "desc", caso contrário "asc"
+                9. Se não entender, retorne:
                     {
                         "ok": false,
                         "message": "Não entendi o comando"
                     }
+                10. NUNCA omita qualquer campo do formato de resposta, mesmo que não seja usado
+                11. No array "sorting", use "column" em vez de "field" para especificar a coluna de ordenação
         <</SYS>>
     [/INST]
 `;
 
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message } = req.body;
-        const userCommand = message.trim().toLowerCase();
+        const { query, context: tableContext, conversationId } = req.body;
+        const userCommand = query.trim().toLowerCase();
         
-        const fullPrompt = buildPrompt(userCommand);
+        const fullPrompt = buildPrompt(userCommand, tableContext);
         const response = await session.prompt(fullPrompt);
         
         const jsonStart = response.indexOf('{');
@@ -81,7 +89,22 @@ app.post('/api/chat', async (req, res) => {
         
         try {
             const result = JSON.parse(jsonString);
-            res.json(result);
+            const newConversationId = conversationId || generateConversationId();
+            const completeResponse = {
+                ok: true,
+                data: {
+                    select: -1,
+                    filters: [],
+                    aggregation: {},
+                    sorting: [],
+                    grouping: [],
+                    pivoting: {},
+                    ...result.data,
+                    conversationId: newConversationId,
+                }
+            };
+
+            res.json(completeResponse);
         } catch (e) {
             res.json({
                 ok: false,
@@ -101,7 +124,6 @@ app.post('/api/chat', async (req, res) => {
     }
 });
 
-const PORT = 3001;
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
