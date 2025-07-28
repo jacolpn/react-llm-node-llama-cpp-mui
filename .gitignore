@@ -1,0 +1,4 @@
+# Ignore models
+*.gguf
+
+node_modules
