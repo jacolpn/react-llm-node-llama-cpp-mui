@@ -2454,3 +2454,245 @@
     true,
     ],
 ```
+
+
+# examples
+```
+    filtrar contratos de capital de giro da empresa x
+[10:55 AM] Eduardo Cardoso
+filtrar parcela de todos os contratos do mes junho/2025
+[10:55 AM] Eduardo Cardoso
+qual a soma da parcelas pagas em 2025 de todos os contratos?
+[10:56 AM] Eduardo Cardoso
+qual valor da soma de provisão de juros e juros pós em 2025
+[10:59 AM] Eduardo Cardoso
+quantos contratos de empréstimos tem no banco do bradesco?
+[11:00 AM] Eduardo Cardoso
+quantos contratos de empréstimos estão em aberto?
+[11:00 AM] Eduardo Cardoso
+quais contratos não foram contabilizados em junho/25?
+
+filtrar pelo produto igual a FROTA e pela categoria Arrendamento
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": {
+            "items": [
+                {
+                    "column": "material",
+                    "operator": "equals",
+                    "value": "FROTA"
+                },
+                {
+                    "column": "category",
+                    "operator": "equals",
+                    "value": "Arrendamento"
+                }
+            ]
+        },
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "bNzBydrVmRGoOQFi0e4fOIDAMhUOH2RS"
+    }
+}
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "operator": "equals",
+                "value": "FROTA",
+                "column": "operation"
+            },
+            {
+                "operator": "equals",
+                "value": "Arrendamento",
+                "column": "category"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "xAX2hV9qiJqdaoHqdedAkh1laO7E8qUH"
+    }
+}
+
+
+
+
+
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "operator": "equals",
+                "value": "FROTA",
+                "column": "operation"
+            },
+            {
+                "operator": "equals",
+                "value": "Arrendamento",
+                "column": "category"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "4Ev5wzbkPauFX4fJkz74KfKdRdtaUeVt"
+    }
+}
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "column": "material",
+                "operator": "equals",
+                "value": "FROTA"
+            },
+            {
+                "column": "category",
+                "operator": "equals",
+                "value": "Arrendamento"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "SIbr4JtyRPTlUZhfqGdSG3baivnxHHVz"
+    }
+}
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "column": "material",
+                "operator": "equals",
+                "value": "FROTA"
+            },
+            {
+                "column": "category",
+                "operator": "equals",
+                "value": "Arrendamento"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "DbQYKKGNrlZxz43koScct6DY0L7uGzKU"
+    }
+}
+
+
+
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "operator": "equals",
+                "value": "BRL",
+                "column": "waers"
+            },
+            {
+                "operator": "equals",
+                "value": "Arrendamento",
+                "column": "category"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "JbQPf7pdfMlnKtkdiQQXqA9fQp9VCziY"
+    }
+}
+
+filtrar pela moeda igual a BRL e pela categoria Arrendamento
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [
+            {
+                "operator": "equals",
+                "value": "BRL",
+                "column": "waers"
+            },
+            {
+                "operator": "equals",
+                "value": "Arrendamento",
+                "column": "category"
+            }
+        ],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "H7dWFoABvd3djHMz_uMZsmmmT4bEEkyX"
+    }
+}
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [],
+        "aggregation": {},
+        "sorting": [
+            {
+                "column": "code",
+                "direction": "asc"
+            }
+        ],
+        "grouping": [],
+        "pivoting": {},
+        "conversationId": "12KSfyezKlG_KNAlwRdyTgUPKbcdDRyz"
+    }
+}
+
+{
+    "ok": true,
+    "data": {
+        "select": -1,
+        "filters": [],
+        "filterOperator": "and",
+        "aggregation": {},
+        "sorting": [
+            {
+                "column": "code",
+                "direction": "asc"
+            }
+        ],
+        "grouping": [],
+        "pivoting": {}
+    }
+}
+```
